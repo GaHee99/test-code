@@ -37,7 +37,7 @@ public class UserControllerTest {
     private UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
+    @Test // [GET]
     void 사용자는_특정_유저의_정보를_전달_받을_수_있다() throws Exception {
         //given
         //when
@@ -51,7 +51,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
-    @Test
+    @Test // [GET] + 404 status Code
     void 사용자는_존재하지_않는_유저의_아이디로_api호출을_할_경우_404_응답을_받는다() throws Exception {
         //given
         //when
@@ -61,7 +61,7 @@ public class UserControllerTest {
                 .andExpect(content().string("Users에서 ID 123456789를 찾을 수 없습니다."));
     }
 
-    @Test
+    @Test // [GET] + add queryParam
     void 사용자는_인증코드로_계정을_활성화_할_수_있다() throws Exception {
        //given
         //when
@@ -73,7 +73,7 @@ public class UserControllerTest {
         assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
     }
 
-    @Test
+    @Test // [GET] + response json value 추출 + header넣기
     void 사용자는_내_정보를_불러올_때_개인정보인_주소도_갖고_올_수_있다() throws Exception{
         //given
         //when
@@ -88,7 +88,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.address").value("seoul"));
     }
 
-    @Test
+    @Test // [PUT] + ObjectMapper + json request추가
     void 사용자는_내_정보를_수정할_수_있다() throws Exception{
         //given
         UserUpdateDto userUpdateDto = UserUpdateDto.builder()
