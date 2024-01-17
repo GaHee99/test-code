@@ -6,7 +6,8 @@ import com.example.demo.user.domain.UserStatus;
 import com.example.demo.user.domain.UserCreate;
 import com.example.demo.user.domain.UserUpdate;
 import com.example.demo.user.infrastructure.UserEntity;
-import com.example.demo.user.infrastructure.UserRepository;
+import com.example.demo.user.infrastructure.UserJpaRepository;
+import com.example.demo.user.service.port.UserRepository;
 import java.time.Clock;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class UserService {
     private final JavaMailSender mailSender;
 
     public UserEntity getByEmail(String email) {
-        return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE)
+        return (UserEntity) userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE)
             .orElseThrow(() -> new ResourceNotFoundException("Users", email));
     }
 
     public UserEntity getById(long id) {
-        return userRepository.findByIdAndStatus(id, UserStatus.ACTIVE)
+        return (UserEntity) userRepository.findByIdAndStatus(id, UserStatus.ACTIVE)
             .orElseThrow(() -> new ResourceNotFoundException("Users", id));
     }
 
@@ -57,13 +58,13 @@ public class UserService {
 
     @Transactional
     public void login(long id) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Users", id));
+        UserEntity userEntity = (UserEntity) userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Users", id));
         userEntity.setLastLoginAt(Clock.systemUTC().millis());
     }
 
     @Transactional
     public void verifyEmail(long id, String certificationCode) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Users", id));
+        UserEntity userEntity = (UserEntity) userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Users", id));
         if (!certificationCode.equals(userEntity.getCertificationCode())) {
             throw new CertificationCodeNotMatchedException();
         }
