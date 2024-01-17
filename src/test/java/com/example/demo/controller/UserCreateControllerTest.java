@@ -6,9 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.demo.model.dto.UserCreateDto;
-import com.example.demo.model.dto.UserUpdateDto;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.user.domain.UserCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -40,11 +38,10 @@ public class UserCreateControllerTest {
     @MockBean
     private JavaMailSender mailSender;
 
-
     @Test  // [PUT] + ObjectMapper + json request추가
     void 사용자는_회원가입을_할_수_있고_사용자는_PENDING_된_상태이다() throws Exception{
         //given
-        UserCreateDto userCreateDto = UserCreateDto.builder()
+        UserCreate userCreate = UserCreate.builder()
                         .email("koko@naver.com")
                         .address("Pangyo")
                         .nickname("hwi")
@@ -57,12 +54,11 @@ public class UserCreateControllerTest {
                         post("/api/users")
                                 .header("EMAIL", "kdkd@gmail.com")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(userCreateDto)))
+                                .content(objectMapper.writeValueAsString(userCreate)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("koko@naver.com"))
                 .andExpect(jsonPath("$.nickname").value("hwi"))
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.address").doesNotExist());
-
     }
 }
